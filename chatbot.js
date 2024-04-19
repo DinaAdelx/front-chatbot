@@ -22,25 +22,29 @@ inputForm.addEventListener('submit', function(event) {
   message.innerHTML = `<p class="chatbot-text" sentTime="${currentTime}">${input}</p>`;
   conversation.appendChild(message);
 
-  // Make a request to the server to get the response
-  fetch('/submit/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ question: input })
-  })
-  .then(response => response.text())
-  .then(data => {
-    // Add chatbot response to conversation
-    const response = data;
-    message = document.createElement('div');
-    message.classList.add('chatbot-message','chatbot');
-    message.innerHTML = `<p class="chatbot-text" sentTime="${currentTime}">${response}</p>`;
-    conversation.appendChild(message);
-    message.scrollIntoView({behavior: "smooth"});
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+  // Function to handle the response
+  async function handleResponse() {
+    try {
+      const response = await fetch('/submit/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ question: input }) // Include the "question" field in the request body
+      });
+      const responseData = await response.text();
+      // Handle the response from the server
+      // Add chatbot response to conversation
+      const responseMessage = document.createElement('div');
+      responseMessage.classList.add('chatbot-message','chatbot');
+      responseMessage.innerHTML = `<p class="chatbot-text" sentTime="${currentTime}">${responseData}</p>`;
+      conversation.appendChild(responseMessage);
+      responseMessage.scrollIntoView({behavior: "smooth"});
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  // Call the function to handle the response
+  handleResponse();
 });

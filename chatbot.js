@@ -23,7 +23,7 @@ inputForm.addEventListener('submit', function(event) {
   conversation.appendChild(message);
 
   // Generate chatbot response
-  const response = generateResponse(input);
+  const response = getVariableFromPython();
 
   // Add chatbot response to conversation
   message = document.createElement('div');
@@ -33,8 +33,20 @@ inputForm.addEventListener('submit', function(event) {
   message.scrollIntoView({behavior: "smooth"});
 });
 
+async function getVariableFromPython() {
+    try {
+        const response = await fetch('/get-variable');
+        const data = await response.json();
+        const variableValue = data.value;
+        // Now you can use variableValue in your JavaScript code
+        console.log(variableValue);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
 // Generate chatbot response function
-function generateResponse(input) {
+/*function generateResponse(input) {
     // Add chatbot logic here
     const responses = [
       "Hello, how can I help you today? 😊" +input,
@@ -53,6 +65,6 @@ function generateResponse(input) {
     
     // Return a random response
     return responses[Math.floor(Math.random() * responses.length)];
-  }
+  }*/
   
   

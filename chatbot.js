@@ -1,50 +1,61 @@
-// Get chatbot elements
-const chatbot = document.getElementById('chatbot');
+// Get input field and conversation container elements
+const inputField = document.getElementById('questionInput');
 const conversation = document.getElementById('conversation');
-const inputForm = document.getElementById('input-form');
-const inputField = document.getElementById('input-field');
 
-// Add event listener to input form
-inputForm.addEventListener('submit', function(event) {
-  // Prevent form submission
-  event.preventDefault();
+// Add event listener to input field for keypress (Enter key)
+inputField.addEventListener('keypress', function(event) {
+  if (event.key === 'Enter') {
+    submitQuestion();
+  }
+});
 
-  // Get user input
-  const input = inputField.value;
+// Function to submit the question to the backend
+async function submitQuestion() {
+  // Get the question entered by the user
+  const question = inputField.value.trim();
 
-  // Clear input field
-  inputField.value = '';
-  const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" });
-
-  // Add user input to conversation
-  let message = document.createElement('div');
-  message.classList.add('chatbot-message', 'user-message');
-  message.innerHTML = `<p class="chatbot-text" sentTime="${currentTime}">${input}</p>`;
-  conversation.appendChild(message);
-
-  // Function to handle the response
-  async function handleResponse() {
-    try {
-      const response = await fetch('/submit/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ question: input }) // Include the "question" field in the request body
-      });
-      const responseData = await response.text();
-      // Handle the response from the server
-      // Add chatbot response to conversation
-      const responseMessage = document.createElement('div');
-      responseMessage.classList.add('chatbot-message','chatbot');
-      responseMessage.innerHTML = `<p class="chatbot-text" sentTime="${currentTime}">${responseData}</p>`;
-      conversation.appendChild(responseMessage);
-      responseMessage.scrollIntoView({behavior: "smooth"});
-    } catch (error) {
-      console.error('Error:', error);
-    }
+  if (question === '') {
+    // If question is empty, do nothing
+    return;
   }
 
-  // Call the function to handle the response
-  handleResponse();
-});
+  // Send the question to the backend
+  try {
+    const response = await fetch('/submit/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ question: question })
+    });
+    const responseData = await response.text();
+    appendMessage(question, 'user');
+    appendMessage(responseData, 'chatbot');
+  } catch (error) {
+    console.error('Error:', error);
+    appendMessage('Error occurred. Please try again.', 'chatbot');
+  }
+
+  // Clear the input field
+  inputField.value = '';
+}
+
+// Function to append a message to the conversation
+function appendMessage(message, sender) {
+  // Create a new message element
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('message', sender);
+
+  // Create a paragraph element for the message text
+  const textElement = document.createElement('p');
+  textElement.textContent = message;
+
+  // Append the text element to the message element
+  messageElement.appendChild(textElement);
+
+  // Append the message element to the conversation container
+  conversation.appendChild(messageElement);
+
+  // Scroll to the bottom of the conversation container
+  conversation.scrollTop = conversation.scrollHeight;
+}

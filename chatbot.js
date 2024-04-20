@@ -34,14 +34,16 @@ inputForm.addEventListener('submit', function(event) {
 });
 
 async function getVariableFromPython() {
-    try {
+ try {
         const response = await fetch('/get-variable');
         const data = await response.json();
         const variableValue = data.value;
-        // Now you can use variableValue in your JavaScript code
-        console.log(variableValue);
+        // Return the variable value as a string
+        return variableValue;
     } catch (error) {
         console.error('Error:', error);
+        // Return an empty string or handle the error as needed
+        return 'oops';
     }
 }
 

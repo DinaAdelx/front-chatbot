@@ -33,6 +33,39 @@ inputForm.addEventListener('submit', function(event) {
   message.scrollIntoView({behavior: "smooth"});
 });
 
+
+function getVariableFromPython() {
+    return fetch('/get-variable')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            return data.value;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            return ''; // Return an empty string or handle the error as needed
+        });
+}
+
+function getValue() {
+    getVariableFromPython()
+        .then(variableValue => {
+            console.log("Variable value:", variableValue);
+            // Now you can use the variableValue string as needed
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle the error as needed
+        });
+}
+
+
+
+/*
 async function getVariableFromPython() {
     try {
         const response = await fetch('/get-variable');
@@ -56,7 +89,7 @@ async function getValue() {
     }
 }
 
-
+*/
 
 
 // Generate chatbot response function

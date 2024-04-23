@@ -4,8 +4,7 @@ const conversation = document.getElementById('conversation');
 const inputForm = document.getElementById('input-form');
 const inputField = document.getElementById('input-field');
 
-// Add event listener to input form
-inputForm.addEventListener('submit', function(event) {
+inputForm.addEventListener('submit', async function(event) {
   // Prevent form submission
   event.preventDefault();
 
@@ -22,16 +21,32 @@ inputForm.addEventListener('submit', function(event) {
   message.innerHTML = `<p class="chatbot-text" sentTime="${currentTime}">${input}</p>`;
   conversation.appendChild(message);
 
-  // Generate chatbot response
-  const response = getValue();
+  try {
+    // Generate chatbot response
+    const response = await getValue();
 
-  // Add chatbot response to conversation
-  message = document.createElement('div');
-  message.classList.add('chatbot-message','chatbot');
-  message.innerHTML = `<p class="chatbot-text" sentTime="${currentTime}">${response}</p>`;
-  conversation.appendChild(message);
-  message.scrollIntoView({behavior: "smooth"});
+    // Add chatbot response to conversation
+    message = document.createElement('div');
+    message.classList.add('chatbot-message','chatbot');
+    message.innerHTML = `<p class="chatbot-text" sentTime="${currentTime}">${response}</p>`;
+    conversation.appendChild(message);
+    message.scrollIntoView({behavior: "smooth"});
+  } catch (error) {
+    console.error('Error:', error);
+    // Handle the error as needed
+  }
 });
+
+async function getValue() {
+  try {
+    const variableValue = await getVariableFromPython();
+    console.log("Variable value:", variableValue);
+    return variableValue;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error; // Rethrow the error to be caught by the event listener
+  }
+}
 
 
 function getVariableFromPython() {
@@ -51,16 +66,15 @@ function getVariableFromPython() {
         });
 }
 
-function getValue() {
-    getVariableFromPython()
-        .then(variableValue => {
-            console.log("Variable value:", variableValue);
-            // Now you can use the variableValue string as needed
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            // Handle the error as needed
-        });
+async function getValue() {
+  try {
+    const variableValue = await getVariableFromPython();
+    console.log("Variable value:", variableValue);
+    return variableValue; // Return the variable value
+  } catch (error) {
+    console.error('Error:', error);
+    throw error; // Rethrow the error to be caught by the event listener
+  }
 }
 
 

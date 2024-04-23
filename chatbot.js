@@ -11,6 +11,33 @@ inputForm.addEventListener('submit', async function(event) {
   // Get user input
   const input = inputField.value;
 
+
+  /* to send the value because its the only way */
+// Capture the value you want to send
+var valueToSend = "Hello from JavaScript!";
+
+// Make an HTTP POST request to the server
+fetch('/send-value', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ value: input })
+})
+.then(response => {
+  if (response.ok) {
+    console.log('Value sent successfully!');
+  } else {
+    console.error('Failed to send value');
+  }
+})
+.catch(error => {
+  console.error('Error:', error);
+});
+/********************************************************/
+
+
+
   // Clear input field
   inputField.value = '';
   const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" });
@@ -76,6 +103,9 @@ async function getValue() {
     throw error; // Rethrow the error to be caught by the event listener
   }
 }
+
+
+
 
 
 
